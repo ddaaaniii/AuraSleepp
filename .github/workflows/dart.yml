@@ -14,8 +14,13 @@ jobs:
         with:
           channel: 'stable'
           architecture: x64
+
       - run: flutter pub get
-      
+
+      - name: Set Team ID
+        run: |
+          find ios -name "project.pbxproj" -exec sed -i '' \
+            "s/DEVELOPMENT_TEAM = [^;]*/DEVELOPMENT_TEAM = ${{ secrets.APPLE_TEAM_ID }}/g" {} \;
 
       - run: pod repo update
         working-directory: ios
