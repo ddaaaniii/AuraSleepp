@@ -21,8 +21,7 @@ class StatsScreen extends StatelessWidget {
               const Text('Estadísticas',
                   style: TextStyle(color: C.text, fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -1)),
               const SizedBox(height: 8),
-              const Text('Tu historial de relajación',
-                  style: TextStyle(color: C.textMuted, fontSize: 14)),
+              const Text('Tu historial de relajación', style: TextStyle(color: C.muted, fontSize: 14)),
               const SizedBox(height: 28),
               _GlassCard(child: Column(children: [
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -35,11 +34,11 @@ class StatsScreen extends StatelessWidget {
                 ]),
                 const SizedBox(height: 20),
                 Row(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  Text('${allFrequencies.length}',
+                  Text('\${allFrequencies.length}',
                       style: const TextStyle(fontSize: 56, fontWeight: FontWeight.w900, letterSpacing: -3, color: C.primary, height: 1.0)),
                   const SizedBox(width: 6),
                   const Padding(padding: EdgeInsets.only(bottom: 10),
-                      child: Text('frecuencias', style: TextStyle(color: C.textMuted, fontSize: 14))),
+                      child: Text('frecuencias', style: TextStyle(color: C.muted, fontSize: 14))),
                 ]),
               ])),
               const SizedBox(height: 16),
@@ -47,10 +46,10 @@ class StatsScreen extends StatelessWidget {
                 crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
                 crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.4,
                 children: [
-                  _StatBox(value: '${allFrequencies.length}', label: 'Frecuencias', emoji: '🎵', color: C.primary),
-                  _StatBox(value: '${p.sessionCount}',        label: 'Sesiones',    emoji: '🎧', color: const Color(0xFF48BEFF)),
-                  _StatBox(value: '${p.totalSessionMinutes} min', label: 'Tiempo total', emoji: '⏱', color: C.green),
-                  _StatBox(value: p.streak > 0 ? '${p.streak} días' : '—', label: 'Racha', emoji: '🔥', color: const Color(0xFFFF9A44)),
+                  _StatBox(value: '\${allFrequencies.length}', label: 'Frecuencias', emoji: '🎵', color: C.primary),
+                  _StatBox(value: '\${p.sessionCount}',        label: 'Sesiones',    emoji: '🎧', color: const Color(0xFF48BEFF)),
+                  _StatBox(value: '\${p.totalSessionMinutes} min', label: 'Tiempo total', emoji: '⏱', color: C.green),
+                  _StatBox(value: p.streak > 0 ? '\${p.streak} días' : '—', label: 'Racha', emoji: '🔥', color: const Color(0xFFFF9A44)),
                 ],
               ),
               const SizedBox(height: 24),
@@ -63,8 +62,8 @@ class StatsScreen extends StatelessWidget {
                   const SizedBox(width: 14),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text(cat.label, style: const TextStyle(color: C.text, fontWeight: FontWeight.w600, fontSize: 15)),
-                    Text('${allFrequencies.where((f) => f.category == cat).length} frecuencias',
-                        style: const TextStyle(color: C.textMuted, fontSize: 12)),
+                    Text('\${allFrequencies.where((f) => f.category == cat).length} frecuencias',
+                        style: const TextStyle(color: C.muted, fontSize: 12)),
                   ])),
                   Container(width: 10, height: 10, decoration: BoxDecoration(color: cat.color, shape: BoxShape.circle)),
                 ])),
@@ -99,16 +98,12 @@ class _StatBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: color.withOpacity(0.08),
-      borderRadius: BorderRadius.circular(18),
-      border: Border.all(color: color.withOpacity(0.2)),
-    ),
+    decoration: BoxDecoration(color: color.withOpacity(0.08), borderRadius: BorderRadius.circular(18), border: Border.all(color: color.withOpacity(0.2))),
     child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
       Text(emoji, style: const TextStyle(fontSize: 22)),
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(value, style: TextStyle(color: color, fontSize: 18, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
-        Text(label, style: const TextStyle(color: C.textMuted, fontSize: 11)),
+        Text(label, style: const TextStyle(color: C.muted, fontSize: 11)),
       ]),
     ]),
   );
