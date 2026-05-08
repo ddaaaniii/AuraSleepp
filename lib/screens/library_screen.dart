@@ -1,74 +1,132 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import '../providers/sleep_provider.dart';
 import '../models/frequency.dart';
-import '../widgets/glass_card.dart';
-import '../widgets/freq_tile.dart';
-import '../theme/app_theme.dart';
+import '../providers/sleep_provider.dart';
+import '../theme/colors.dart';
+
+const _filters = [
+  ('🎵 Todas',      FreqCategory.all),
+  ('🌙 Sueño',      FreqCategory.sleep),
+  ('🌀 Theta',      FreqCategory.theta),
+  ('🌊 Alpha',      FreqCategory.alpha),
+  ('⚡ Beta',       FreqCategory.beta),
+  ('🔥 Gamma',      FreqCategory.gamma),
+  ('✨ Especiales',  FreqCategory.special),
+];
 
 class LibraryScreen extends StatelessWidget {
   const LibraryScreen({super.key});
 
-  static const _tabs = [
-    ('🎵 Todas', FreqCategory.all),
-    ('🌙 Sueño', FreqCategory.sleep),
-    ('🌀 Theta',  FreqCategory.theta),
-    ('🌊 Alpha',  FreqCategory.alpha),
-    ('⚡ Beta',   FreqCategory.beta),
-    ('🔥 Gamma',  FreqCategory.gamma),
-    ('✨ Especiales', FreqCategory.special),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final p = context.watch<SleepProvider>();
-    return Column(children: [
-      // Filter tabs
-      SizedBox(
-        height: 44,
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          itemCount: _tabs.length,
-          itemBuilder: (_, i) {
-            final (label, cat) = _tabs[i];
-            final active = p.libraryFilter == cat;
-            return GestureDetector(
-              onTap: () => p.setFilter(cat),
-              child: AnimatedContainer(
-                duration: 180.ms,
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(999),
-                  color: active ? C.primary.withOpacity(0.18) : Colors.white.withOpacity(0.05),
-                  border: Border.all(color: active ? C.primary.withOpacity(0.5) : C.border),
-                ),
-                child: Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: active ? C.primary : C.muted)),
+    return Scaffold(
+      backgroundColor: C.bg,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
+              child: Text('Biblioteca',
+                  style: TextStyle(color: C.text, fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -1)),
+            ),
+            SizedBox(
+              height: 40,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: _filters.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (ctx, i) {
+                  final (label, cat) = _filters[i];
+                  final active = p.libraryFilter == cat;
+                  return GestureDetector(
+                    onTap: () => p.setFilter(cat),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: active ? C.primary.withOpacity(0.25) : C.surface,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: active ? C.primary : Colors.white12),
+                      ),
+                      child: Text(label,
+                          style: TextStyle(color: active ? C.primary : C.muted, fontSize: 12, fontWeight: FontWeight.w600)),
+                    ),
+                  );
+                },
               ),
-            );
-          },
+            ),
+            const SizedBox(height: 12),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: p.filteredFrequencies.length,
+                itemBuilder: (ctx, i) {
+                  final f = p.filteredFrequencies[i];
+                  final isActive = p.activeFreq?.id == f.id;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: GestureDetector(
+                      onTap: () => p.selectFrequency(f),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: isActive ? f.color.withOpacity(0.12) : C.surface,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: isActive ? f.color.withOpacity(0.4) : Colors.white12),
+                        ),
+                        child: Row(children: [
+                          Container(
+                            width: 44, height: 44,
+                            decoration: BoxDecoration(
+                              color: f.color.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Center(child: Text(f.hzDisplay.split(' ')[0],
+                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: f.color))),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Text(f.name, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: C.text)),
+                            const SizedBox(height: 2),
+                            Row(children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(color: f.color.withOpacity(0.12), borderRadius: BorderRadius.circular(6)),
+                                child: Text(f.categoryLabel, style: TextStyle(fontSize: 9, color: f.color, fontWeight: FontWeight.w600)),
+                              ),
+                              const SizedBox(width: 6),
+                              Flexible(child: Text(f.description, style: const TextStyle(fontSize: 11, color: C.muted), overflow: TextOverflow.ellipsis)),
+                            ]),
+                          ])),
+                          Column(mainAxisSize: MainAxisSize.min, children: [
+                            GestureDetector(
+                              onTap: () => p.toggleFavorite(f),
+                              child: Icon(f.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                                  color: f.isFavorite ? C.red : C.muted, size: 20),
+                            ),
+                            const SizedBox(height: 6),
+                            GestureDetector(
+                              onTap: () => f.isInMix ? p.removeFromMix(f) : p.addToMix(f),
+                              child: Icon(
+                                f.isInMix ? Icons.remove_circle_outline_rounded : Icons.add_circle_outline_rounded,
+                                size: 20, color: f.isInMix ? C.red : C.primary.withOpacity(0.7),
+                              ),
+                            ),
+                          ]),
+                        ]),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
-      const SizedBox(height: 12),
-      // List
-      Expanded(
-        child: ListView.builder(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-          itemCount: p.filteredFrequencies.length,
-          itemBuilder: (_, i) => FreqTile(
-            freq: p.filteredFrequencies[i],
-            isActive: p.activeFreq?.id == p.filteredFrequencies[i].id,
-            onTap: () => p.selectFrequency(p.filteredFrequencies[i]),
-            onFav: () => p.toggleFavorite(p.filteredFrequencies[i]),
-            onMix: () {
-              final f = p.filteredFrequencies[i];
-              f.isInMix ? p.removeFromMix(f) : p.addToMix(f);
-            },
-          ).animate().fadeIn(delay: (i * 18).ms, duration: 280.ms),
-        ),
-      ),
-    ]);
+    );
   }
 }
