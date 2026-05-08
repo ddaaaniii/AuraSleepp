@@ -1,4 +1,4 @@
-zimport 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 enum AppTheme { purple, pink, blue, red }
 
