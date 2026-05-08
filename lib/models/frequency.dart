@@ -1,74 +1,101 @@
-enum FreqCategory { all, sleep, theta, alpha, beta, gamma, special }
+import 'package:flutter/material.dart';
+
+enum FrequencyCategory {
+  deepSleep,
+  theta,
+  alpha,
+  beta,
+  gamma,
+  special,
+}
+
+extension FrequencyCategoryExt on FrequencyCategory {
+  String get name {
+    switch (this) {
+      case FrequencyCategory.deepSleep: return 'Sueño Profundo';
+      case FrequencyCategory.theta:     return 'Ondas Theta';
+      case FrequencyCategory.alpha:     return 'Relajación Alpha';
+      case FrequencyCategory.beta:      return 'Concentración Beta';
+      case FrequencyCategory.gamma:     return 'Meditación Gamma';
+      case FrequencyCategory.special:   return 'Frecuencias Especiales';
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case FrequencyCategory.deepSleep: return const Color(0xFF6C63FF);
+      case FrequencyCategory.theta:     return const Color(0xFF48BEFF);
+      case FrequencyCategory.alpha:     return const Color(0xFF43E97B);
+      case FrequencyCategory.beta:      return const Color(0xFFFF9A44);
+      case FrequencyCategory.gamma:     return const Color(0xFFFF6CAB);
+      case FrequencyCategory.special:   return const Color(0xFFFFD700);
+    }
+  }
+
+  String get emoji {
+    switch (this) {
+      case FrequencyCategory.deepSleep: return '🌙';
+      case FrequencyCategory.theta:     return '🌊';
+      case FrequencyCategory.alpha:     return '🍃';
+      case FrequencyCategory.beta:      return '⚡';
+      case FrequencyCategory.gamma:     return '✨';
+      case FrequencyCategory.special:   return '🎵';
+    }
+  }
+}
 
 class Frequency {
   final String id;
   final double hz;
-  final String label;
-  final String categoryLabel;
+  final String name;
   final String description;
-  final FreqCategory category;
-  final Color color;
+  final FrequencyCategory category;
   bool isFavorite;
-  bool isInMix;
 
   Frequency({
-    required this.id, required this.hz, required this.label,
-    required this.categoryLabel, required this.description,
-    required this.category, required this.color,
-    this.isFavorite = false, this.isInMix = false,
+    required this.id,
+    required this.hz,
+    required this.name,
+    required this.description,
+    required this.category,
+    this.isFavorite = false,
   });
-
-  String get hzDisplay => hz < 100 ? '${hz % 1 == 0 ? hz.toInt() : hz} Hz' : '${hz.toInt()} Hz';
 }
-
-import 'package:flutter/material.dart';
 
 final List<Frequency> allFrequencies = [
-  // Sleep / Delta
-  Frequency(id:'d05', hz:0.5,  label:'Sueño extremo',    categoryLabel:'Delta',   description:'Inducción al sueño más profundo. Regeneración celular máxima.',           category:FreqCategory.sleep,   color:const Color(0xFF6B8EFF)),
-  Frequency(id:'d1',  hz:1.0,  label:'Inducción lenta',   categoryLabel:'Delta',   description:'Transición suave al sueño profundo. Relajación total.',                   category:FreqCategory.sleep,   color:const Color(0xFF7B9FFF)),
-  Frequency(id:'d2',  hz:2.0,  label:'Sueño profundo',    categoryLabel:'Delta',   description:'Ondas delta para inducir el sueño más profundo y restaurador.',           category:FreqCategory.sleep,   color:const Color(0xFF8AABFF), isFavorite:true),
-  Frequency(id:'d3',  hz:3.0,  label:'Calma corporal',    categoryLabel:'Delta',   description:'Relajación muscular profunda. Restauración física.',                      category:FreqCategory.sleep,   color:const Color(0xFF9BB8FF)),
-  Frequency(id:'d4',  hz:4.0,  label:'Puerta Theta',      categoryLabel:'Delta',   description:'Umbral entre sueño y meditación. Creatividad subconsciente.',             category:FreqCategory.sleep,   color:const Color(0xFFAAC4FF)),
+  // Sueño Profundo
+  Frequency(id: 'd1', hz: 0.5, name: 'Delta 0.5 Hz', description: 'Sueño profundo máximo', category: FrequencyCategory.deepSleep),
+  Frequency(id: 'd2', hz: 1.0, name: 'Delta 1 Hz',   description: 'Recuperación celular', category: FrequencyCategory.deepSleep),
+  Frequency(id: 'd3', hz: 2.0, name: 'Delta 2 Hz',   description: 'Sueño reparador',     category: FrequencyCategory.deepSleep),
+  Frequency(id: 'd4', hz: 3.0, name: 'Delta 3 Hz',   description: 'Regeneración profunda', category: FrequencyCategory.deepSleep),
+  Frequency(id: 'd5', hz: 4.0, name: 'Delta 4 Hz',   description: 'Transición al sueño', category: FrequencyCategory.deepSleep),
   // Theta
-  Frequency(id:'t5',  hz:5.0,  label:'Insight',           categoryLabel:'Theta',   description:'Estado de insight y procesamiento de memoria. Creatividad profunda.',     category:FreqCategory.theta,   color:const Color(0xFFBB88FF)),
-  Frequency(id:'t6',  hz:6.0,  label:'Astral',            categoryLabel:'Theta',   description:'Expansión de consciencia. Meditación profunda y viaje interior.',        category:FreqCategory.theta,   color:const Color(0xFFCC99FF)),
-  Frequency(id:'t7',  hz:7.0,  label:'Esquemas',          categoryLabel:'Theta',   description:'Procesamiento de recuerdos y esquemas mentales. Aprendizaje REM.',       category:FreqCategory.theta,   color:const Color(0xFFDDABFF)),
+  Frequency(id: 't1', hz: 4.0,  name: 'Theta 4 Hz',  description: 'Meditación profunda', category: FrequencyCategory.theta),
+  Frequency(id: 't2', hz: 5.0,  name: 'Theta 5 Hz',  description: 'Creatividad REM',     category: FrequencyCategory.theta),
+  Frequency(id: 't3', hz: 6.0,  name: 'Theta 6 Hz',  description: 'Intuición y sueños',  category: FrequencyCategory.theta),
+  Frequency(id: 't4', hz: 7.0,  name: 'Theta 7 Hz',  description: 'Estado hipnótico',    category: FrequencyCategory.theta),
   // Alpha
-  Frequency(id:'a8',  hz:8.0,  label:'Alpha puro',        categoryLabel:'Alpha',   description:'Calma mental plena. Estado de alerta relajada y receptividad.',          category:FreqCategory.alpha,   color:const Color(0xFF55DDCC)),
-  Frequency(id:'a10', hz:10.0, label:'Anti-estrés',       categoryLabel:'Alpha',   description:'Reducción de estrés y ansiedad. Estado de flujo mental óptimo.',        category:FreqCategory.alpha,   color:const Color(0xFF66EED8)),
-  Frequency(id:'a12', hz:12.0, label:'Flow',              categoryLabel:'Alpha',   description:'Estado de flujo creativo. Concentración relajada y productiva.',         category:FreqCategory.alpha,   color:const Color(0xFF77FFEE)),
+  Frequency(id: 'a1', hz: 8.0,  name: 'Alpha 8 Hz',  description: 'Relajación consciente', category: FrequencyCategory.alpha),
+  Frequency(id: 'a2', hz: 10.0, name: 'Alpha 10 Hz', description: 'Calma y claridad',    category: FrequencyCategory.alpha),
+  Frequency(id: 'a3', hz: 12.0, name: 'Alpha 12 Hz', description: 'Flujo mental',         category: FrequencyCategory.alpha),
   // Beta
-  Frequency(id:'b14', hz:14.0, label:'Focus',             categoryLabel:'Beta',    description:'Concentración activa y pensamiento lógico. Ideal para estudiar.',        category:FreqCategory.beta,    color:const Color(0xFFFFCC44)),
-  Frequency(id:'b18', hz:18.0, label:'Deep Work',         categoryLabel:'Beta',    description:'Máxima productividad y procesamiento rápido. Análisis profundo.',        category:FreqCategory.beta,    color:const Color(0xFFFFDD66)),
-  Frequency(id:'b20', hz:20.0, label:'Alerta total',      categoryLabel:'Beta',    description:'Alerta máxima y reacción rápida. Deportes y rendimiento.',               category:FreqCategory.beta,    color:const Color(0xFFFFEE88)),
+  Frequency(id: 'b1', hz: 14.0, name: 'Beta 14 Hz',  description: 'Atención activa',     category: FrequencyCategory.beta),
+  Frequency(id: 'b2', hz: 18.0, name: 'Beta 18 Hz',  description: 'Concentración plena', category: FrequencyCategory.beta),
+  Frequency(id: 'b3', hz: 20.0, name: 'Beta 20 Hz',  description: 'Procesamiento rápido', category: FrequencyCategory.beta),
   // Gamma
-  Frequency(id:'g30', hz:30.0, label:'Lucidez',           categoryLabel:'Gamma',   description:'Lucidez expandida y percepción ampliada. Consciencia plena.',            category:FreqCategory.gamma,   color:const Color(0xFFFF8877)),
-  Frequency(id:'g40', hz:40.0, label:'Consciencia',       categoryLabel:'Gamma',   description:'Consciencia plena y meditación avanzada. Integración cognitiva.',        category:FreqCategory.gamma,   color:const Color(0xFFFF9988)),
-  Frequency(id:'g80', hz:80.0, label:'Gamma alto',        categoryLabel:'Gamma',   description:'Estado meditativo avanzado. Procesamiento neural de alta velocidad.',    category:FreqCategory.gamma,   color:const Color(0xFFFFAA99)),
-  // Solfeggio / Special
-  Frequency(id:'s174', hz:174.0, label:'Anti-dolor',      categoryLabel:'Solfeggio', description:'Reduce el dolor y el estrés. Base de seguridad y bienestar.',           category:FreqCategory.special, color:const Color(0xFF88CCFF)),
-  Frequency(id:'s285', hz:285.0, label:'Sanación',        categoryLabel:'Solfeggio', description:'Regeneración de tejidos y sanación celular. Restauración física.',      category:FreqCategory.special, color:const Color(0xFF99DDFF)),
-  Frequency(id:'s396', hz:396.0, label:'Liberación',      categoryLabel:'Solfeggio', description:'Libera el miedo y la culpa. Transforma el dolor en alegría.',           category:FreqCategory.special, color:const Color(0xFFAAEEFF)),
-  Frequency(id:'s417', hz:417.0, label:'Cambio',          categoryLabel:'Solfeggio', description:'Facilita el cambio positivo. Deshace situaciones negativas.',           category:FreqCategory.special, color:const Color(0xFF66DDBB)),
-  Frequency(id:'s432', hz:432.0, label:'Tierra',          categoryLabel:'Solfeggio', description:'Afinación natural del universo. Armonía con la naturaleza.',            category:FreqCategory.special, color:const Color(0xFF77EECC)),
-  Frequency(id:'s440', hz:440.0, label:'Estándar',        categoryLabel:'Solfeggio', description:'Afinación convencional. Base de la música moderna occidental.',         category:FreqCategory.special, color:const Color(0xFF88FFDD)),
-  Frequency(id:'s528', hz:528.0, label:'Amor / ADN',      categoryLabel:'Solfeggio', description:'Frecuencia del amor y reparación del ADN. Transformación milagrosa.',   category:FreqCategory.special, color:const Color(0xFFBB88FF), isFavorite:true),
-  Frequency(id:'s639', hz:639.0, label:'Conexión',        categoryLabel:'Solfeggio', description:'Relaciones interpersonales y amor. Armonía social y comunicación.',     category:FreqCategory.special, color:const Color(0xFFCC99FF)),
-  Frequency(id:'s741', hz:741.0, label:'Intuición',       categoryLabel:'Solfeggio', description:'Despertar de la intuición y expresión. Solución de problemas.',         category:FreqCategory.special, color:const Color(0xFF9988FF)),
-  Frequency(id:'s852', hz:852.0, label:'Espiritual',      categoryLabel:'Solfeggio', description:'Retorno al orden espiritual. Consciencia superior y claridad.',         category:FreqCategory.special, color:const Color(0xFFAA99FF)),
-  Frequency(id:'s963', hz:963.0, label:'Corona',          categoryLabel:'Solfeggio', description:'Conexión con lo divino. Activación del tercer ojo y chakra corona.',   category:FreqCategory.special, color:const Color(0xFFBBAEFF)),
-];
-
-class QuickPreset {
-  final String title, subtitle, emoji;
-  final List<String> freqIds;
-  const QuickPreset({required this.title, required this.subtitle, required this.emoji, required this.freqIds});
-}
-
-const quickPresets = [
-  QuickPreset(title:'Sueño profundo', subtitle:'2 Hz · 396 Hz', emoji:'🌙', freqIds:['d2','s396']),
-  QuickPreset(title:'Concentración',  subtitle:'18 Hz · 528 Hz', emoji:'⚡', freqIds:['b18','s528']),
-  QuickPreset(title:'Meditación',     subtitle:'6 Hz · 432 Hz',  emoji:'🔮', freqIds:['t6','s432']),
-  QuickPreset(title:'Sanación',       subtitle:'528 Hz · 852 Hz', emoji:'✨', freqIds:['s528','s852']),
+  Frequency(id: 'g1', hz: 30.0, name: 'Gamma 30 Hz', description: 'Insights y epifanías', category: FrequencyCategory.gamma),
+  Frequency(id: 'g2', hz: 40.0, name: 'Gamma 40 Hz', description: 'Consciencia plena',   category: FrequencyCategory.gamma),
+  Frequency(id: 'g3', hz: 80.0, name: 'Gamma 80 Hz', description: 'Hiper-consciencia',   category: FrequencyCategory.gamma),
+  // Especiales
+  Frequency(id: 's1',  hz: 174.0, name: '174 Hz',  description: 'Alivio del dolor',      category: FrequencyCategory.special),
+  Frequency(id: 's2',  hz: 285.0, name: '285 Hz',  description: 'Regeneración tisular',  category: FrequencyCategory.special),
+  Frequency(id: 's3',  hz: 396.0, name: '396 Hz',  description: 'Liberar el miedo',      category: FrequencyCategory.special),
+  Frequency(id: 's4',  hz: 417.0, name: '417 Hz',  description: 'Facilitar el cambio',   category: FrequencyCategory.special),
+  Frequency(id: 's5',  hz: 432.0, name: '432 Hz',  description: 'Armonía universal',     category: FrequencyCategory.special),
+  Frequency(id: 's6',  hz: 440.0, name: '440 Hz',  description: 'Estándar musical',      category: FrequencyCategory.special),
+  Frequency(id: 's7',  hz: 528.0, name: '528 Hz',  description: 'Reparación del ADN',    category: FrequencyCategory.special),
+  Frequency(id: 's8',  hz: 639.0, name: '639 Hz',  description: 'Relaciones y amor',     category: FrequencyCategory.special),
+  Frequency(id: 's9',  hz: 741.0, name: '741 Hz',  description: 'Expresión y solución',  category: FrequencyCategory.special),
+  Frequency(id: 's10', hz: 852.0, name: '852 Hz',  description: 'Intuición espiritual',  category: FrequencyCategory.special),
+  Frequency(id: 's11', hz: 963.0, name: '963 Hz',  description: 'Consciencia divina',    category: FrequencyCategory.special),
 ];
