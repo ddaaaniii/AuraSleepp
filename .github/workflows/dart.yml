@@ -17,6 +17,9 @@ jobs:
 
       - run: flutter pub get
 
+      - name: Generar archivos iOS
+        run: flutter create --platforms=ios .
+
       - name: Set Team ID
         run: |
           find ios -name "project.pbxproj" -exec sed -i '' \
