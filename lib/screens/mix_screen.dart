@@ -15,38 +15,35 @@ class _MixScreenState extends State<MixScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final audio = context.watch<SleepProvider>();
+    final p = context.watch<SleepProvider>();
     return Scaffold(
       backgroundColor: C.bg,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-              child: Text('Mezclar Frecuencias',
-                  style: const TextStyle(color: C.text, fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -1)),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
+              child: Text('Mezclar', style: TextStyle(color: C.text, fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -1)),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text('Selecciona hasta 3 frecuencias',
-                  style: const TextStyle(color: C.textMuted, fontSize: 14)),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: Text('Hasta 3 frecuencias', style: TextStyle(color: C.muted, fontSize: 14)),
             ),
             const SizedBox(height: 16),
             Expanded(
               child: GridView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.6,
-                ),
+                    crossAxisCount: 2, crossAxisSpacing: 12, mainAxisSpacing: 12, childAspectRatio: 1.6),
                 itemCount: allFrequencies.length > 12 ? 12 : allFrequencies.length,
                 itemBuilder: (ctx, i) {
                   final f = allFrequencies[i];
                   final sel = _selected.contains(f.id);
                   return GestureDetector(
                     onTap: () => setState(() {
-                      if (sel) { _selected.remove(f.id); }
-                      else if (_selected.length < 3) { _selected.add(f.id); }
+                      if (sel) _selected.remove(f.id);
+                      else if (_selected.length < 3) _selected.add(f.id);
                     }),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
@@ -63,7 +60,7 @@ class _MixScreenState extends State<MixScreen> {
                           Text(f.category.emoji, style: const TextStyle(fontSize: 22)),
                           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                             Text(f.hzDisplay, style: TextStyle(color: f.color, fontSize: 15, fontWeight: FontWeight.w800)),
-                            Text(f.description, style: const TextStyle(color: C.textMuted, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis),
+                            Text(f.description, style: const TextStyle(color: C.muted, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis),
                           ]),
                         ],
                       ),
@@ -85,9 +82,9 @@ class _MixScreenState extends State<MixScreen> {
                     ),
                     onPressed: () {
                       final freqs = allFrequencies.where((f) => _selected.contains(f.id)).toList();
-                      audio.playMix(freqs);
+                      p.playMix(freqs);
                     },
-                    child: Text('Reproducir mezcla (${_selected.length})',
+                    child: Text('Reproducir mezcla (\${_selected.length})',
                         style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
                   ),
                 ),
