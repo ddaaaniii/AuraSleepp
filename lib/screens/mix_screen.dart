@@ -24,7 +24,8 @@ class _MixScreenState extends State<MixScreen> {
           children: [
             const Padding(
               padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
-              child: Text('Mezclar', style: TextStyle(color: C.text, fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -1)),
+              child: Text('Mezclar',
+                  style: TextStyle(color: C.text, fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -1)),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
@@ -42,15 +43,21 @@ class _MixScreenState extends State<MixScreen> {
                   final sel = _selected.contains(f.id);
                   return GestureDetector(
                     onTap: () => setState(() {
-                      if (sel) _selected.remove(f.id);
-                      else if (_selected.length < 3) _selected.add(f.id);
+                      if (sel) {
+                        _selected.remove(f.id);
+                      } else if (_selected.length < 3) {
+                        _selected.add(f.id);
+                      }
                     }),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       decoration: BoxDecoration(
                         color: sel ? f.color.withOpacity(0.2) : C.surface.withOpacity(0.5),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: sel ? f.color : Colors.white.withOpacity(0.08), width: sel ? 1.5 : 1),
+                        border: Border.all(
+                          color: sel ? f.color : Colors.white.withOpacity(0.08),
+                          width: sel ? 1.5 : 1,
+                        ),
                       ),
                       padding: const EdgeInsets.all(14),
                       child: Column(
@@ -59,8 +66,16 @@ class _MixScreenState extends State<MixScreen> {
                         children: [
                           Text(f.category.emoji, style: const TextStyle(fontSize: 22)),
                           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Text(f.hzDisplay, style: TextStyle(color: f.color, fontSize: 15, fontWeight: FontWeight.w800)),
-                            Text(f.description, style: const TextStyle(color: C.muted, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis),
+                            Text(
+                              f.hzDisplay,
+                              style: TextStyle(color: f.color, fontSize: 15, fontWeight: FontWeight.w800),
+                            ),
+                            Text(
+                              f.description,
+                              style: const TextStyle(color: C.muted, fontSize: 11),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ]),
                         ],
                       ),
@@ -84,8 +99,10 @@ class _MixScreenState extends State<MixScreen> {
                       final freqs = allFrequencies.where((f) => _selected.contains(f.id)).toList();
                       p.playMix(freqs);
                     },
-                    child: Text('Reproducir mezcla (\${_selected.length})',
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+                    child: Text(
+                      'Reproducir mezcla (' + _selected.length.toString() + ')',
+                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
               ),
