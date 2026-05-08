@@ -1,101 +1,157 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import '../providers/sleep_provider.dart';
-import '../widgets/glass_card.dart';
-import '../widgets/wave_visualizer.dart';
-import '../widgets/freq_tile.dart';
-import '../widgets/play_button.dart';
-import '../theme/app_theme.dart';
+import '../models/frequency.dart';
+import '../providers/audio_provider.dart';
+import '../theme/colors.dart';
 
-class MixScreen extends StatelessWidget {
+class MixScreen extends StatefulWidget {
   const MixScreen({super.key});
+  @override
+  State<MixScreen> createState() => _MixScreenState();
+}
+
+class _MixScreenState extends State<MixScreen> {
+  final Set<String> _selected = {};
 
   @override
   Widget build(BuildContext context) {
-    final p = context.watch<SleepProvider>();
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
-      children: [
-
-        // ── MIXER PLAYER CARD ──
-        GlassCard(
-          radius: 26,
-          child: Column(children: [
-            const SectionHeader(title: 'Mezclador', action: null),
-            const Text('Combina múltiples frecuencias simultáneamente', style: TextStyle(fontSize: 13, color: C.muted), textAlign: TextAlign.center),
-            const SizedBox(height: 18),
-            WaveVisualizer(playing: p.isPlaying, height: 80),
+    final audio = context.watch<AudioProvider>();
+    return Scaffold(
+      backgroundColor: C.bg,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
+              child: Text('Mezclar Frecuencias',
+                  style: TextStyle(
+                      color: C.text,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -1)),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text('Selecciona hasta 3 frecuencias para combinar',
+                  style: TextStyle(color: C.textMuted, fontSize: 14)),
+            ),
             const SizedBox(height: 16),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              // Play mix
-              Expanded(
-                child: GestureDetector(
-                  onTap: p.mix.isEmpty ? null : p.playMix,
-                  child: AnimatedContainer(
-                    duration: 200.ms,
-                    height: 52,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(999),
-                      gradient: p.mix.isEmpty ? null : LinearGradient(colors: [C.primary.withOpacity(0.35), C.secondary.withOpacity(0.22)]),
-                      color: p.mix.isEmpty ? Colors.white.withOpacity(0.05) : null,
-                      border: Border.all(color: p.mix.isEmpty ? C.border : C.primary.withOpacity(0.5)),
-                      boxShadow: p.mix.isEmpty ? null : [BoxShadow(color: C.primary.withOpacity(0.25), blurRadius: 20)],
+            Expanded(
+              child: GridView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 1.6,
+                ),
+                itemCount: allFrequencies.take(12).length,
+                itemBuilder: (ctx, i) {
+                  final f = allFrequencies.take(12).toList()[i];
+                  return FreqTile(
+                    freq: f,
+                    selected: _selected.contains(f.id),
+                    onTap: () => setState(() {
+                      if (_selected.contains(f.id)) {
+                        _selected.remove(f.id);
+                      } else if (_selected.length < 3) {
+                        _selected.add(f.id);
+                      }
+                    }),
+                  );
+                },
+              ),
+            ),
+            if (_selected.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: C.accent,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
                     ),
-                    child: Center(child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(Icons.play_arrow_rounded, color: p.mix.isEmpty ? C.faint : C.text, size: 20),
-                      const SizedBox(width: 6),
-                      Text('Reproducir mezcla (${p.mix.length})', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: p.mix.isEmpty ? C.faint : C.text)),
-                    ])),
+                    onPressed: () {
+                      final freqs = allFrequencies
+                          .where((f) => _selected.contains(f.id))
+                          .toList();
+                      audio.playMix(freqs);
+                    },
+                    child: Text(
+                      'Reproducir mezcla (${_selected.length})',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
-              GestureDetector(
-                onTap: p.clearMix,
-                child: Container(
-                  height: 52, width: 52,
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.05), border: Border.all(color: C.border)),
-                  child: const Icon(Icons.clear_rounded, color: C.muted, size: 20),
-                ),
-              ),
-            ]),
-          ]),
-        ).animate().fadeIn(duration: 340.ms),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-        const SizedBox(height: 14),
+class FreqTile extends StatelessWidget {
+  final Frequency freq;
+  final bool selected;
+  final VoidCallback onTap;
 
-        // ── MIX SLOTS ──
-        if (p.mix.isNotEmpty) GlassCard(
-          radius: 22,
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            SectionHeader(title: 'En la mezcla · ${p.mix.length}'),
-            ...p.mix.map((f) => FreqTile(
-              freq: f, isActive: true,
-              onTap: () => p.selectFrequency(f),
-              onFav: () => p.toggleFavorite(f),
-              onMix: () => p.removeFromMix(f),
-            )),
-          ]),
-        ).animate().fadeIn(delay: 60.ms),
+  const FreqTile(
+      {super.key,
+      required this.freq,
+      required this.selected,
+      required this.onTap});
 
-        if (p.mix.isNotEmpty) const SizedBox(height: 14),
-
-        // ── ADD FROM LIBRARY ──
-        GlassCard(
-          radius: 22,
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const SectionHeader(title: 'Añadir frecuencias'),
-            ...allFrequencies.take(12).map((f) => FreqTile(
-              freq: f,
-              isActive: p.activeFreq?.id == f.id,
-              onTap: () => p.selectFrequency(f),
-              onFav: () => p.toggleFavorite(f),
-              onMix: () => f.isInMix ? p.removeFromMix(f) : p.addToMix(f),
-            )),
-          ]),
-        ).animate().fadeIn(delay: 120.ms),
-      ],
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color: selected
+              ? freq.category.color.withOpacity(0.25)
+              : C.surface.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected
+                ? freq.category.color
+                : Colors.white.withOpacity(0.08),
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(freq.category.emoji,
+                style: const TextStyle(fontSize: 22)),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('${freq.hz.toStringAsFixed(freq.hz % 1 == 0 ? 0 : 1)} Hz',
+                    style: TextStyle(
+                        color: freq.category.color,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800)),
+                Text(freq.description,
+                    style: TextStyle(
+                        color: C.textMuted, fontSize: 11),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
